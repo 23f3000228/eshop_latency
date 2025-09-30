@@ -1,22 +1,22 @@
-import json
-import pandas as pd
-import numpy as np
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+import pandas as pd
+import numpy as np
+import json
 
 app = FastAPI()
 
+# Add CORS middleware here
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_methods=["POST"],
+    allow_origins=["*"],   # allows requests from any domain
+    allow_methods=["POST"], 
     allow_headers=["*"],
 )
 
-# Safely read JSON
-with open("telemetry.json", "r", encoding="utf-8") as f:
-    content = f.read().strip()  # remove leading/trailing whitespace
-    data = json.loads(content)
+# Load your telemetry data
+with open("telemetry.json", "r") as f:
+    data = json.load(f)
 
 df = pd.DataFrame(data)
 
