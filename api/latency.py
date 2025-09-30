@@ -6,19 +6,22 @@ import json
 
 app = FastAPI()
 
-# Add CORS middleware here
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],   # allows requests from any domain
-    allow_methods=["POST"], 
-    allow_headers=["*"],
+    allow_origins=["*"],      # Allow all origins
+    allow_methods=["*"],      # Allow all HTTP methods
+    allow_headers=["*"],      # Allow all headers
 )
 
-# Load your telemetry data
 with open("telemetry.json", "r") as f:
     data = json.load(f)
 
 df = pd.DataFrame(data)
+
+@app.options("/api/latency")
+async def preflight(request: Request):
+    # Handles browser preflight requests
+    return {}
 
 @app.post("/api/latency")
 async def latency_check(request: Request):
