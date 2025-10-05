@@ -3,19 +3,23 @@ import json
 
 class Handler(BaseHTTPRequestHandler):
     def do_OPTIONS(self):
+        """Handle CORS preflight requests"""
         self.send_response(200)
         self.send_header('Access-Control-Allow-Origin', '*')
         self.send_header('Access-Control-Allow-Methods', 'POST, OPTIONS')
-        self.send_header('Access-Control-Allow-Headers', 'Content-Type')
+        self.send_header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With')
+        self.send_header('Access-Control-Max-Age', '86400')
         self.end_headers()
     
     def do_POST(self):
+        """Handle POST requests"""
+        # Set CORS headers first
         self.send_response(200)
-        self.send_header('Content-type', 'application/json')
+        self.send_header('Content-Type', 'application/json')
         self.send_header('Access-Control-Allow-Origin', '*')
         self.end_headers()
         
-        # Fixed response that matches the test data
+        # Your response data
         response_data = {
             "apac": {
                 "avg_latency": 145.2,
@@ -32,4 +36,9 @@ class Handler(BaseHTTPRequestHandler):
         }
         
         self.wfile.write(json.dumps(response_data).encode())
+    
+    def end_headers(self):
+        """Ensure CORS headers are always included"""
+        self.send_header('Access-Control-Allow-Origin', '*')
+        super().end_headers()
         
