@@ -2,6 +2,7 @@ from http.server import BaseHTTPRequestHandler
 import json
 import statistics
 import os
+import numpy as np
 
 class Handler(BaseHTTPRequestHandler):
     def do_OPTIONS(self):
@@ -85,7 +86,7 @@ class Handler(BaseHTTPRequestHandler):
             
             response_data["regions"][region] = {
                 "avg_latency": round(avg_latency, 2),
-                "p95_latency": round(p95_latency, 2),
+                p95_latency = np.percentile(latencies, 95),
                 "avg_uptime": round(avg_uptime, 2),
                 "breaches": breaches
             }
