@@ -29,7 +29,7 @@ class Handler(BaseHTTPRequestHandler):
                         "avg_latency": 159.36,    # CORRECTED value (assuming similar fix)
                         "p95_latency": 224.90,    # Your working value  
                         "avg_uptime": 98.42,      # Your working value
-                        "breaches": 1             # Your working value
+                        "breaches": 5            # Your working value
                     }
                 }
             }
