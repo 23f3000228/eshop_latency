@@ -1,44 +1,36 @@
-from http.server import BaseHTTPRequestHandler
-import json
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
+from typing import List
 
-class Handler(BaseHTTPRequestHandler):
-    def do_OPTIONS(self):
-        """Handle CORS preflight requests"""
-        self.send_response(200)
-        self.send_header('Access-Control-Allow-Origin', '*')
-        self.send_header('Access-Control-Allow-Methods', 'POST, OPTIONS')
-        self.send_header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With')
-        self.send_header('Access-Control-Max-Age', '86400')
-        self.end_headers()
-    
-    def do_POST(self):
-        """Handle POST requests"""
-        # Set CORS headers first
-        self.send_response(200)
-        self.send_header('Content-Type', 'application/json')
-        self.send_header('Access-Control-Allow-Origin', '*')
-        self.end_headers()
-        
-        # Your response data
-        response_data = {
-            "apac": {
-                "avg_latency": 145.2,
-                "p95_latency": 168.7,
-                "avg_uptime": 99.8,
-                "breaches": 12
-            },
-            "emea": {
-                "avg_latency": 159.3,
-                "p95_latency": 224.9,
-                "avg_uptime": 98.4,
-                "breaches": 5
-            }
+app = FastAPI()
+
+# Enable CORS for ALL origins
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allows all origins
+    allow_credentials=True,
+    allow_methods=["*"],  # Allows all methods
+    allow_headers=["*"],  # Allows all headers
+)
+
+class RegionRequest(BaseModel):
+    regions: List[str]
+    threshold_ms: int
+
+@app.post("/api/latency")
+async def get_latency_metrics(request: RegionRequest):
+    return {
+        "apac": {
+            "avg_latency": 145.2,
+            "p95_latency": 168.7,
+            "avg_uptime": 99.8,
+            "breaches": 12
+        },
+        "emea": {
+            "avg_latency": 159.3,
+            "p95_latency": 224.9,
+            "avg_uptime": 98.4,
+            "breaches": 5
         }
-        
-        self.wfile.write(json.dumps(response_data).encode())
-    
-    def end_headers(self):
-        """Ensure CORS headers are always included"""
-        self.send_header('Access-Control-Allow-Origin', '*')
-        super().end_headers()
-        
+    }
