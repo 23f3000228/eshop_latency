@@ -1,17 +1,19 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from typing import List
 
 app = FastAPI()
 
-# Enable CORS for ALL origins
+# COMPLETE CORS configuration
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Allows all origins
+    allow_origins=["*"],  # Allow ALL origins
     allow_credentials=True,
-    allow_methods=["*"],  # Allows all methods
-    allow_headers=["*"],  # Allows all headers
+    allow_methods=["*"],  # Allow all methods
+    allow_headers=["*"],  # Allow all headers
+    expose_headers=["*"]  # Expose all headers to frontend
 )
 
 class RegionRequest(BaseModel):
@@ -20,7 +22,7 @@ class RegionRequest(BaseModel):
 
 @app.post("/api/latency")
 async def get_latency_metrics(request: RegionRequest):
-    return {
+    response_data = {
         "apac": {
             "avg_latency": 145.2,
             "p95_latency": 168.7,
@@ -34,3 +36,18 @@ async def get_latency_metrics(request: RegionRequest):
             "breaches": 5
         }
     }
+    
+    # Create response with explicit CORS headers
+    response = JSONResponse(content=response_data)
+    response.headers["Access-Control-Allow-Origin"] = "*"
+    response.headers["Access-Control-Expose-Headers"] = "*"
+    return response
+
+@app.options("/api/latency")
+async def options_latency():
+    response = JSONResponse(content={"status": "ok"})
+    response.headers["Access-Control-Allow-Origin"] = "*"
+    response.headers["Access-Control-Allow-Methods"] = "POST, OPTIONS"
+    response.headers["Access-Control-Allow-Headers"] = "Content-Type"
+    response.headers["Access-Control-Expose-Headers"] = "*"
+    return response
