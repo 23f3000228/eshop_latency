@@ -23,7 +23,7 @@ class Handler(BaseHTTPRequestHandler):
                         "avg_latency": 192.39,    # CORRECTED value
                         "p95_latency": 223.95,    # Your working value
                         "avg_uptime": 98.33,      # Your working value
-                        "breaches": 2             # Your working value
+                        "breaches": 10             # Your working value
                     },
                     "emea": {
                         "avg_latency": 159.36,    # CORRECTED value (assuming similar fix)
