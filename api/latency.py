@@ -2,7 +2,6 @@ from http.server import BaseHTTPRequestHandler
 import json
 import statistics
 import os
-import numpy as np
 
 class Handler(BaseHTTPRequestHandler):
     def do_OPTIONS(self):
@@ -79,14 +78,20 @@ class Handler(BaseHTTPRequestHandler):
             latencies = [item['latency_ms'] for item in region_data]
             uptimes = [item['uptime_percent'] for item in region_data]
             
+            # Calculate average latency
             avg_latency = statistics.mean(latencies)
-            p95_latency = sorted(latencies)[int(0.95 * len(latencies))]
+            
+            # Calculate 95th percentile
+            sorted_latencies = sorted(latencies)
+            index_95 = max(0, min(len(sorted_latencies) - 1, int(0.95 * len(sorted_latencies))))
+            p95_latency = sorted_latencies[index_95]
+            
             avg_uptime = statistics.mean(uptimes)
             breaches = sum(1 for latency in latencies if latency > threshold_ms)
             
             response_data["regions"][region] = {
                 "avg_latency": round(avg_latency, 2),
-                p95_latency = np.percentile(latencies, 95),
+                "p95_latency": round(p95_latency, 2),
                 "avg_uptime": round(avg_uptime, 2),
                 "breaches": breaches
             }
